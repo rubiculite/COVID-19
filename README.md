@@ -1,4 +1,4 @@
-# <a href="https://en.wikipedia.org/wiki/Soviet_submarine_K-19">K19</a> -- Allegorical abbreviation for COVID-19.
+# <a href="https://en.wikipedia.org/wiki/Soviet_submarine_K-19">K19</a> &mdash; Allegorical abbreviation for COVID-19.
 
 This is just a play space for exploring the K19 data, while in self-isolation.*
 
