@@ -9,3 +9,7 @@ The following is an indicator of the world's recovery rates. The Recovery and De
 As I'm a Winnipeger, I'm interested in Canadian Stats. Here's are the Confirmend Cases for Manitoba.
 
 <img src="https://github.com/rubiculite/K19/blob/master/plts/manitoba_confirmed.png">
+
+---
+
+*The data is obtained from the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) COVID-19 submodule.
