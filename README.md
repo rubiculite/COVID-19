@@ -12,4 +12,4 @@ As I'm a Winnipeger, I'm interested in Canadian Stats. Here's are the Confirmend
 
 ---
 
-*The data is obtained from the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) <a href="https://github.com/CSSEGISandData/COVID-19">COVID-19 submodule</a>.
+*The data is obtained from the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) <a href="https://github.com/CSSEGISandData/COVID-19">COVID-19 repo</a>, which included here as a submodule.
