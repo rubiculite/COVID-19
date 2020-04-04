@@ -6,6 +6,6 @@ The following is an indicator of the world's recovery rates. The Recovery and De
 
 <img src="https://github.com/rubiculite/K19/blob/master/plts/wolrd_outcome_rates.png">
 
-As I'm a Winnipeger, I'm interest in Canadian Stats. Here's are the Confirmend Cases for Manitoba.
+As I'm a Winnipeger, I'm interested in Canadian Stats. Here's are the Confirmend Cases for Manitoba.
 
 <img src="https://github.com/rubiculite/K19/blob/master/plts/manitoba_confirmed.png">
