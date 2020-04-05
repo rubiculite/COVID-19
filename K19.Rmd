@@ -100,12 +100,17 @@ for (data_file in data_files) {
 #df['recovery'] <- df$confirmed / df$recovered
 canada <- df[(df$country_region=='Canada'),]
 quebec <- df[(df$province_state=='Quebec'),]
-plot(quebec$confirmed,type='b',xaxs='i',xlab="Days since 03-22-2020",ylab="Confirmed",main="Quebec K19 Stats")
+ontario <- df[(df$province_state=='Ontario'),]
+quebec <- df[(df$province_state=='Quebec'),]
+manitoba <- df[(df$province_state=="Manitoba"),]
+bc <- df[(df$province_state=='British Columbia'),]
+plot(quebec$confirmed,type='b',xaxs='i',xlab=paste("Days since",quebec$date[[1]]),ylab="Confirmed",main=paste("Quebec K19 Stats as of",time_stamp))
+plot(ontario$confirmed,type='b',xaxs='i',xlab=paste("Days since",ontario$date[[1]]),ylab="Confirmed",main=paste("Ontario K19 Stats as of",time_stamp))
 # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
 ac <- aggregate(canada$confirmed,by=list(date=canada$date),FUN=sum)
-plot(ac$x,type='b',xaxs='i',xlab="Days since 01-26-2020",ylab="Log(Confirmed)",main="Canada K19 Stats",log="y")
-manitoba <- df[(df$province_state=="Manitoba"),]
-plot(manitoba$confirmed,type='b',xaxs='i',xlab="Days since 03-22-2020",ylab="Confirmed",main=paste("Manitoba K19 Stats as of",time_stamp))
+plot(ac$x,type='b',xaxs='i',xlab="Days since 01-26-2020",ylab="Log(Confirmed)",main=paste("Canada K19 Stats as of",time_stamp),log="y")
+plot(manitoba$confirmed,type='b',xaxs='i',xlab=paste("Days since",manitoba$date[[1]]),ylab="Confirmed",main=paste("Manitoba K19 Stats as of",time_stamp))
+plot(bc$confirmed,type='b',xaxs='i',xlab=paste("Days since",bc$date[[1]],bc$date[[1]]),ylab="Confirmed",main=paste("BC K19 Stats as of",time_stamp))
 dw <- data.frame(
   date=character(),
   confirmed=numeric(),
@@ -154,7 +159,7 @@ points(dw$death_rate,cex=.7,pch=20,col='red')
 points(fitted(model),type='l',col='blue')
 points(dw$recovery_rate,cex=.7,pch=20,col='blue')
 legend("topleft",
-       legend=c("Recory Rate","Death Rate"),
+       legend=c("Recovery Rate","Death Rate"),
        cex=.7,
        pch=20,
        col=c("blue","red"),
