@@ -10,152 +10,208 @@ knitr::opts_chunk$set(echo = TRUE)
 library(splines)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
 ```{r}
-data_root <- "/Users/susy/workbench/K19/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/"
-data_files <- Sys.glob(paste(data_root,"*.csv",sep=""))
+get_dataset <- function() {
+  data_root <- "/Users/susy/workbench/K19/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/"
+  data_files <- Sys.glob(paste(data_root,"*.csv",sep=""))
+  
+  # reference list
+  header_hist = list(
+    '01-22-2020'=list('Province.State','Country.Region','Last.Update','Confirmed','Deaths','Recovered'),
+    '03-01-2020'=list('Province.State','Country.Region','Last.Update','Confirmed','Deaths','Recovered','Latitude','Longitude'),
+    '03-22-2020'=list('FIPS','Admin2','Province_State','Country_Region','Last_Update','Lat','Long_','Confirmed','Deaths','Recovered','Active','Combined_Key')
+  )
 
-#headers = ["FIPS","Admin2","Province_State","Country_Region","Last_Update","Lat","Long_","Confirmed","Deaths"         "Recovered","Active","Combined_Key" ] 
-
-header_hist = list(
-  '01-22-2020'=list('Province.State','Country.Region','Last.Update','Confirmed','Deaths','Recovered'),
-  '03-01-2020'=list('Province.State','Country.Region','Last.Update','Confirmed','Deaths','Recovered','Latitude','Longitude'),
-  '03-22-2020'=list('FIPS','Admin2','Province_State','Country_Region','Last_Update','Lat','Long_','Confirmed','Deaths','Recovered','Active','Combined_Key')
-)
-
-df <- data.frame(
-  date=character(),
-  last_update=character(),
-  lat=numeric(),
-  long=numeric(),
-  province_state=character(),
-  country_region=character(),
-  confirmed=numeric(),
-  deaths=numeric(),
-  recovered=numeric(),
-  active=numeric(),
-  stringsAsFactors = FALSE
-)
-b_flag <- 0
-for (data_file in data_files) {
-  time_stamp <- sub(".csv","",sub(data_root,"",data_file))
-  time_stamp <- as.character.Date(time_stamp)
-  datum <- read.csv(data_file)
-  if (time_stamp=='03-01-2020') {
-    b_flag <- 1
-  } else if (time_stamp=='03-22-2020') {
-    b_flag <- 2
+  df <- data.frame(
+    date=character(),
+    last_update=character(),
+    lat=numeric(),
+    long=numeric(),
+    province_state=character(),
+    country_region=character(),
+    confirmed=numeric(),
+    deaths=numeric(),
+    recovered=numeric(),
+    active=numeric(),
+    stringsAsFactors = FALSE
+  )
+  b_flag <- 0
+  for (data_file in data_files) {
+    time_stamp <- sub(".csv","",sub(data_root,"",data_file))
+    time_stamp <- as.character.Date(time_stamp)
+    datum <- read.csv(data_file)
+    if (time_stamp=='03-01-2020') {
+      b_flag <- 1
+    } else if (time_stamp=='03-22-2020') {
+      b_flag <- 2
+    }
+    rows <- dim(datum)[1]
+    time_stamps <- rep(time_stamp,rows)
+    if (b_flag==0) {
+      df <- rbind(df,data.frame(
+        date=time_stamps,
+        last_update=datum[['Last.Update']],
+        lat=rep(NA,rows),
+        long=rep(NA,rows),
+        province_state=datum[['Province.State']],
+        country_region=datum[['Country.Region']],
+        confirmed=datum[['Confirmed']],
+        deaths=datum[['Deaths']],
+        recovered=datum[['Recovered']],
+        active=rep(NA,rows),
+        stringsAsFactors = FALSE
+      ))
+    } else if (b_flag==1) {
+      df <- rbind(df,data.frame(
+        date=time_stamps,
+        last_update=datum[['Last.Update']],
+        lat=datum[['Latitude']],
+        long=datum[['Longitude']],
+        province_state=datum[['Province.State']],
+        country_region=datum[['Country.Region']],
+        confirmed=datum[['Confirmed']],
+        deaths=datum[['Deaths']],
+        recovered=datum[['Recovered']],
+        active=rep(NA,rows),
+        stringsAsFactors = FALSE
+      ))
+    } else { # b_flag > 1
+      df <- rbind(df,data.frame(
+        date=time_stamps,
+        last_update=datum[['Last_Update']],
+        lat=datum[['Lat']],
+        long=datum[['Long_']],
+        province_state=datum[['Province_State']],
+        country_region=datum[['Country_Region']],
+        confirmed=datum[['Confirmed']],
+        deaths=datum[['Deaths']],
+        recovered=datum[['Recovered']],
+        active=datum[['Active']],
+        stringsAsFactors = FALSE
+      ))
+    }
   }
-  rows <- dim(datum)[1]
-  time_stamps <- rep(time_stamp,rows)
-  if (b_flag==0) {
-    df <- rbind(df,data.frame(
-      date=time_stamps,
-      last_update=datum[['Last.Update']],
-      lat=rep(NA,rows),
-      long=rep(NA,rows),
-      province_state=datum[['Province.State']],
-      country_region=datum[['Country.Region']],
-      confirmed=datum[['Confirmed']],
-      deaths=datum[['Deaths']],
-      recovered=datum[['Recovered']],
-      active=rep(NA,rows),
-      stringsAsFactors = FALSE
-    ))
-  } else if (b_flag==2) {
-    df <- rbind(df,data.frame(
-      date=time_stamps,
-      last_update=datum[['Last_Update']],
-      lat=datum[['Lat']],
-      long=datum[['Long_']],
-      province_state=datum[['Province_State']],
-      country_region=datum[['Country_Region']],
-      confirmed=datum[['Confirmed']],
-      deaths=datum[['Deaths']],
-      recovered=datum[['Recovered']],
-      active=datum[['Active']],
-      stringsAsFactors = FALSE
-    ))
+  df$confirmed[is.na(df$confirmed)] <- 0
+  df$deaths[is.na(df$deaths)]       <- 0
+  df$recovered[is.na(df$recovered)] <- 0
+  df
+}
+
+
+plt_province_stats <- function(df) {
+  time_stamp <- df$date[[length(df$date)]]
+  provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
+  for (province in provinces) {
+    pstats <- df[(df$province_state==province),]
+    plot(pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
+         xlab=paste("Days since",pstats$date[[1]]),
+         ylab=paste("Confirmed"),
+         main=paste(province,"K19 Stats as of",time_stamp)
+    )
   }
 }
-#df['recovery'] <- df$confirmed / df$recovered
-canada <- df[(df$country_region=='Canada'),]
-quebec <- df[(df$province_state=='Quebec'),]
-ontario <- df[(df$province_state=='Ontario'),]
-quebec <- df[(df$province_state=='Quebec'),]
-manitoba <- df[(df$province_state=="Manitoba"),]
-bc <- df[(df$province_state=='British Columbia'),]
-plot(quebec$confirmed,type='b',xaxs='i',xlab=paste("Days since",quebec$date[[1]]),ylab="Confirmed",main=paste("Quebec K19 Stats as of",time_stamp))
-plot(ontario$confirmed,type='b',xaxs='i',xlab=paste("Days since",ontario$date[[1]]),ylab="Confirmed",main=paste("Ontario K19 Stats as of",time_stamp))
-# https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
-ac <- aggregate(canada$confirmed,by=list(date=canada$date),FUN=sum)
-plot(ac$x,type='b',xaxs='i',xlab="Days since 01-26-2020",ylab="Log(Confirmed)",main=paste("Canada K19 Stats as of",time_stamp),log="y")
-plot(manitoba$confirmed,type='b',xaxs='i',xlab=paste("Days since",manitoba$date[[1]]),ylab="Confirmed",main=paste("Manitoba K19 Stats as of",time_stamp))
-plot(bc$confirmed,type='b',xaxs='i',xlab=paste("Days since",bc$date[[1]],bc$date[[1]]),ylab="Confirmed",main=paste("BC K19 Stats as of",time_stamp))
-dw <- data.frame(
-  date=character(),
-  confirmed=numeric(),
-  deaths=numeric(),
-  recovered=numeric(),
+
+provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
+datum <- data.frame(
+  province=c('Quebec','Ontario','Manitoba','Saskatchewan','British Columbia'),
+  color=c("red","blue","black","orange","brown"),
   stringsAsFactors = FALSE
 )
-b_flag <- 0
-for (data_file in data_files) {
-  if (time_stamp=='03-01-2020') {
-    b_flag <- 1
-  } else if (time_stamp=='03-22-2020') {
-    b_flag <- 2
+dates <- unique(df$date)
+zeros <- rep(0,length(dates))
+strs <- rep('',length(dates))
+dc <- data.frame(
+  date=character(),
+  province=character(),
+  confirmed=numeric(),
+  stringsAsFactors = FALSE
+)
+for (date in unique(df$date)) {
+  sd <- df[(df$date==date),]
+  for (province in datum$province){
+    pstat <- sd[(sd$province_state==province),]
+    if (dim(pstat)[1] > 0) {
+      dc[nrow(dc)+1,] = list(as.character.Date(date),province,pstat$confirmed)
+    } else {
+      dc[nrow(dc)+1,] <- list(as.character.Date(date),province,NA)
+    }
   }
-  time_stamp <- sub(".csv","",sub(data_root,"",data_file))
-  datum <- read.csv(data_file)
-  if (b_flag < 2) {
-    #datum <- datum[(datum$Country.Region!='China'),]
+}
+dc <- dc[(dc$date > "03-12-2020"),]
+first <- TRUE
+for (province in datum$province) {
+  if (first) {
+    plot(
+      dc[(dc$province==province),]$confirmed,
+      xaxs='i',
+      ylim=c(min(dc$confirmed,na.rm=TRUE),max(dc$confirmed,na.rm=TRUE)),
+      xlab=paste("Days Since",dc$date[1]),
+      ylab='Confirmed (Log Scale)',
+      main=paste('Canada K19 Stats from John Hopkins as of',max(dc$date)),
+      type='b',
+      cex=.7,
+      pch=20,
+      col=datum[(datum$province==province),]$color,
+      panel.first=grid(),
+      log='y'
+    )
+    first <- FALSE
   } else {
-    #datum <- datum[(datum$Country_Region!='China'),]
+    points(dc[(dc$province==province),]$confirmed,type='b',cex=.7,pch=20,col=datum[(datum$province==province),]$color)
   }
-  #print(list(time_stamp,sum(datum[['Confirmed']],na.rm=TRUE),sum(datum[['Recovered']],na.rm=TRUE)))
-  dw[nrow(dw)+1,] <- list(time_stamp,sum(datum[['Confirmed']],na.rm=TRUE),sum(datum['Deaths'],na.rm=TRUE),sum(datum[['Recovered']],na.rm=TRUE))
 }
-#dw['recovery'] <- 1-dw$confirmed /(dw$recovered+dw$deaths)
+legend("topleft",
+       legend=datum$province,
+       cex=.7,
+       pch=20,
+       col=datum$color,
+       lty=1
+)
+
+
+plt_canada_stats <- function(df) {
+  time_stamp <- df$date[[length(df$date)]]
+  canada <- df[(df$country_region=='Canada'),]
+  # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
+  ac <- aggregate(canada$confirmed,by=list(date=canada$date),FUN=sum)
+  plot(ac$x,type='b',xaxs='i',panel.first=grid(),
+       xlab="Days since 01-26-2020",
+       ylab="Log(Confirmed)",
+       main=paste("Canada K19 Stats as of",time_stamp),log="y")
+}
+
+df <- get_dataset()
+#plt_province_stats(df)
+#plt_canada_stats(df)
+
+
+
+dw <- data.frame(
+  date=unique(df$date),
+  confirmed=aggregate(df$confirmed,by=list(date=df$date),FUN=sum)$x,
+  deaths=aggregate(df$deaths,by=list(date=df$date),FUN=sum)$x,
+  recovered=aggregate(df$recovered,by=list(date=df$date),FUN=sum)$x,
+  stringsAsFactors = FALSE
+)
 dw['recovery_rate'] <- dw$recovered*100.0/dw$confirmed
 dw['death_rate'] <- dw$deaths*100.0/dw$confirmed
 x <- seq(length(dw$recovery_rate))
 y <- dw$recovery_rate
 model <- lm(y ~ poly(x,10))
-#summary(r_fit)
 plot(
      dw$death_rate,
      xlab = 'Days Since 01-22-2020',
      ylab='% Outcome',
      ylim=c(0,100),
-     main=paste('Worldwide K19 Case Outcome Rates as of',time_stamp),
+     main=paste('Worldwide K19 Case Outcome Rates as of',df$date[[length(df$date)]]),
      #type='b',
      type='l',
      xaxs='i',
      yaxs='i',
-     col='red'
+     col='red',
+     panel.first=grid()
 )
 points(dw$death_rate,cex=.7,pch=20,col='red')
-#points(dw$recovery_rate,type='l')
 points(fitted(model),type='l',col='blue')
 points(dw$recovery_rate,cex=.7,pch=20,col='blue')
 legend("topleft",
@@ -165,13 +221,6 @@ legend("topleft",
        col=c("blue","red"),
        lty=1
 )
-rc <- aggregate(canada$recovered,by=list(date=canada$date),FUN=sum)
-rcan <- data.frame(date=ac$date,confirmed=ac$x,recovered=rc$x)
-rcan['recovery'] <- rcan$confirmed / rcan$recovered
-rcan <- rcan[(!is.na(rcan$recovery)&!is.infinite(rcan$recovery)),]
-ac <- ac[(ac$date>'02-11-2020'),]
-par(mfrow=c(1,2))
-jump <- rcan[(rcan$recovery==max(rcan$recovery)),]
-#plot(ac$x,type='b',xaxs='i',xlab="Days since 02-12-2020",ylab="Log(Confirmed)",main="Canada K19 Stats",log="y")
-#plot(rcan$recovery,xaxs='i',type='b',xlab="Days since 02-12-2020",ylab="Confirmed / Recovered",main="Canada K19 Stats")
+remove(x)
+remove(y)
 ```
