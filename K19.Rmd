@@ -96,6 +96,7 @@ get_dataset <- function() {
   df$recovered[is.na(df$recovered)] <- 0
   df
 }
+df <- get_dataset()
 
 
 plt_province_stats <- function(df) {
@@ -124,6 +125,8 @@ dc <- data.frame(
   date=character(),
   province=character(),
   confirmed=numeric(),
+  deaths=numeric(),
+  recovered=numeric(),
   stringsAsFactors = FALSE
 )
 for (date in unique(df$date)) {
@@ -131,12 +134,13 @@ for (date in unique(df$date)) {
   for (province in datum$province){
     pstat <- sd[(sd$province_state==province),]
     if (dim(pstat)[1] > 0) {
-      dc[nrow(dc)+1,] = list(as.character.Date(date),province,pstat$confirmed)
+      dc[nrow(dc)+1,] = list(as.character.Date(date),province,pstat$confirmed,pstat$deaths,pstat$recovered)
     } else {
-      dc[nrow(dc)+1,] <- list(as.character.Date(date),province,NA)
+      dc[nrow(dc)+1,] <- list(as.character.Date(date),province,NA,NA,NA)
     }
   }
 }
+dc['recovery'] <- dc$recovered*100.0/dc$confirmed
 dc <- dc[(dc$date > "03-12-2020"),]
 first <- TRUE
 for (province in datum$province) {
@@ -176,13 +180,12 @@ plt_canada_stats <- function(df) {
   ac <- aggregate(canada$confirmed,by=list(date=canada$date),FUN=sum)
   plot(ac$x,type='b',xaxs='i',panel.first=grid(),
        xlab="Days since 01-26-2020",
-       ylab="Log(Confirmed)",
+       ylab="Confirmed (Log Scale)",
        main=paste("Canada K19 Stats as of",time_stamp),log="y")
 }
 
-df <- get_dataset()
 #plt_province_stats(df)
-#plt_canada_stats(df)
+plt_canada_stats(df)
 
 
 
@@ -195,6 +198,57 @@ dw <- data.frame(
 )
 dw['recovery_rate'] <- dw$recovered*100.0/dw$confirmed
 dw['death_rate'] <- dw$deaths*100.0/dw$confirmed
+dw['total_rate'] <- (dw$recovered+dw$deaths)*100.0/dw$confirmed
+
+df_country <- function(Country) {
+  dfc <- data.frame(
+    date=unique(df[(df$country_region==Country),]$date),
+    confirmed=aggregate(df[(df$country_region==Country),]$confirmed,by=list(date=df[(df$country_region==Country),]$date),FUN=sum)$x,
+    deaths=aggregate(df[(df$country_region==Country),]$deaths,by=list(date=df[(df$country_region==Country),]$date),FUN=sum)$x,
+    recovered=aggregate(df[(df$country_region==Country),]$recovered,by=list(date=df[(df$country_region==Country),]$date),FUN=sum)$x,
+    stringsAsFactors = FALSE
+  )
+  dfc['recovery_rate'] <- dfc$recovered*100 / dfc$confirmed
+  dfc
+}
+
+get_recovery_rates <- function() {
+  countries = c(
+    'US','Spain','Italy','France','Germany','China','Iran','UK','Canada','Barbados','Jamaica',
+    'Turkey','Switzerland','Belgium','Netherlands','Brazil','Austria','Portugal','South Korea',
+    'Israel','Sweden','Australia','Norway','Ireland','India','Chile','Russia','Denmark','Czechia',
+    'Poland','Malaysia','Japan','Philippines','Ecuador','Peru','Luxembourg')
+  global_recoveries <- c()
+  local_recoveries <- c()
+  for (country in countries) {
+    rc <- df_country(country)
+    global_recoveries <- c(global_recoveries,rc$recovery_rate[nrow(rc)]*rc$confirmed[nrow(rc)]/dw$confirmed[nrow(dw)])
+    local_recoveries <- c(local_recoveries,rc$recovery_rate[nrow(rc)])
+  }
+  rr <- data.frame(
+    country=countries,
+    global_recovery_rate=global_recoveries,
+    local_recovery_rate=local_recoveries,
+    stringsAsFactors = FALSE
+  )
+  rr[order(rr$global_recovery_rate,decreasing=TRUE),]
+}
+recovery_rates <- get_recovery_rates()
+rr_str <- c()
+reduced_recovery_rates <- recovery_rates[(recovery_rates$global_recovery_rate>0.1),]
+for (idx in 1:nrow(reduced_recovery_rates)) {
+  rr_str <- c(rr_str,sprintf("%s: %.1f%%",reduced_recovery_rates$country[idx],reduced_recovery_rates$global_recovery_rate[idx]))
+}
+rr_str <- c(rr_str,sprintf("[Global: %.1f%%]",sum(dw$recovery_rate[nrow(dw)])))
+rrr_str <- c()
+rrr <- recovery_rates[(order(recovery_rates$local_recovery_rate,decreasing = TRUE)),]
+rrr <- rrr[(rrr$local_recovery_rate>5),]
+for (idx in 1:nrow(rrr)) {
+  rrr_str <- c(rrr_str,sprintf("%s: %.1f%%",rrr$country[idx],rrr$local_recovery_rate[idx]))
+}
+#rrr_str <- c(rrr_str,sprintf("[Global: %.1f%%]",sum(dw$recovery_rate[nrow(dw)])))
+for (output in rrr_str) {cat(output,"\n")}
+
 x <- seq(length(dw$recovery_rate))
 y <- dw$recovery_rate
 model <- lm(y ~ poly(x,10))
@@ -203,7 +257,7 @@ plot(
      xlab = 'Days Since 01-22-2020',
      ylab='% Outcome',
      ylim=c(0,100),
-     main=paste('Worldwide K19 Case Outcome Rates as of',df$date[[length(df$date)]]),
+     main=paste('Global K19 Case Outcome Rates as of',df$date[[length(df$date)]]),
      #type='b',
      type='l',
      xaxs='i',
@@ -214,13 +268,30 @@ plot(
 points(dw$death_rate,cex=.7,pch=20,col='red')
 points(fitted(model),type='l',col='blue')
 points(dw$recovery_rate,cex=.7,pch=20,col='blue')
+#points(dw$spain,cex=.7,pch=20,col='black')
+x <- seq(length(dw$total_rate))
+y <- dw$total_rate
+model <- lm(y ~ poly(x,10))
+points(fitted(model),type='l',col="darkgrey")
 legend("topleft",
-       legend=c("Recovery Rate","Death Rate"),
+       title="Case Outcome Rates",
+       legend=c("Recovered / Confirmed","Deaths / Confirmed","(Recovered + Deaths) / Confirmed"),
        cex=.7,
-       pch=20,
-       col=c("blue","red"),
+       pch=c(20,20,NA),
+       col=c("blue","red","darkgrey"),
        lty=1
 )
+legend("topright",bty='n',title="Recovery Rates (>0.1)",cex=.7,legend=rr_str,text.col="blue")
+text(0.5,58.5,
+     paste("Notes: As the world recovers, Total / Confirmed",
+           "will approach 100%, where Total = Recovered",
+           "+ Deaths.  These curves should remain fairly",
+           "unchanged when adjusted for True Cases, due",
+           "to the ratios. They should also remain",
+           "relatively unchanged due to inaccuracies",
+           "in reporting, due to source variation.",sep="\n"),
+     cex=0.6,pos=4)
 remove(x)
 remove(y)
+
 ```
