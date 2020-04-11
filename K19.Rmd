@@ -184,7 +184,7 @@ plt_canada_stats <- function(df) {
        main=paste("Canada K19 Stats as of",time_stamp),log="y")
 }
 
-#plt_province_stats(df)
+plt_province_stats(df)
 plt_canada_stats(df)
 
 
@@ -235,7 +235,7 @@ get_recovery_rates <- function() {
 }
 recovery_rates <- get_recovery_rates()
 rr_str <- c()
-reduced_recovery_rates <- recovery_rates[(recovery_rates$global_recovery_rate>0.1),]
+reduced_recovery_rates <- recovery_rates[(recovery_rates$global_recovery_rate>0.3),]
 for (idx in 1:nrow(reduced_recovery_rates)) {
   rr_str <- c(rr_str,sprintf("%s: %.1f%%",reduced_recovery_rates$country[idx],reduced_recovery_rates$global_recovery_rate[idx]))
 }
@@ -251,7 +251,7 @@ for (output in rrr_str) {cat(output,"\n")}
 
 x <- seq(length(dw$recovery_rate))
 y <- dw$recovery_rate
-model <- lm(y ~ poly(x,10))
+model <- lm(y ~ poly(x,12))
 plot(
      dw$death_rate,
      xlab = 'Days Since 01-22-2020',
@@ -271,7 +271,7 @@ points(dw$recovery_rate,cex=.7,pch=20,col='blue')
 #points(dw$spain,cex=.7,pch=20,col='black')
 x <- seq(length(dw$total_rate))
 y <- dw$total_rate
-model <- lm(y ~ poly(x,10))
+model <- lm(y ~ poly(x,12))
 points(fitted(model),type='l',col="darkgrey")
 legend("topleft",
        title="Case Outcome Rates",
@@ -281,7 +281,7 @@ legend("topleft",
        col=c("blue","red","darkgrey"),
        lty=1
 )
-legend("topright",bty='n',title="Recovery Rates (>0.1)",cex=.7,legend=rr_str,text.col="blue")
+legend("topright",bty='n',title="Recovery Rates (>0.3)",cex=.7,legend=rr_str,text.col="blue")
 text(0.5,58.5,
      paste("Notes: As the world recovers, Total / Confirmed",
            "will approach 100%, where Total = Recovered",
