@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(splines)
+library(Hmisc)
 ```
 
 ```{r}
@@ -104,73 +105,75 @@ plt_province_stats <- function(df) {
   provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
   for (province in provinces) {
     pstats <- df[(df$province_state==province),]
-    plot(pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
-         xlab=paste("Days since",pstats$date[[1]]),
+    plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
+         xlab="Days",
          ylab=paste("Confirmed"),
          main=paste(province,"K19 Stats as of",time_stamp)
     )
   }
 }
 
-provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
-datum <- data.frame(
-  province=c('Quebec','Ontario','Manitoba','Saskatchewan','British Columbia'),
-  color=c("red","blue","black","orange","brown"),
-  stringsAsFactors = FALSE
-)
-dates <- unique(df$date)
-zeros <- rep(0,length(dates))
-strs <- rep('',length(dates))
-dc <- data.frame(
-  date=character(),
-  province=character(),
-  confirmed=numeric(),
-  deaths=numeric(),
-  recovered=numeric(),
-  stringsAsFactors = FALSE
-)
-for (date in unique(df$date)) {
-  sd <- df[(df$date==date),]
-  for (province in datum$province){
-    pstat <- sd[(sd$province_state==province),]
-    if (dim(pstat)[1] > 0) {
-      dc[nrow(dc)+1,] = list(as.character.Date(date),province,pstat$confirmed,pstat$deaths,pstat$recovered)
-    } else {
-      dc[nrow(dc)+1,] <- list(as.character.Date(date),province,NA,NA,NA)
+plt_prov_stats <- function(df) {
+  #provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
+  datum <- data.frame(
+    province=c('Quebec','Ontario','Manitoba','Saskatchewan','British Columbia'),
+    color=c("red","blue","black","orange","brown"),
+    stringsAsFactors = FALSE
+  )
+  dates <- unique(df$date)
+  zeros <- rep(0,length(dates))
+  strs <- rep('',length(dates))
+  dc <- data.frame(
+    date=character(),
+    province=character(),
+    confirmed=numeric(),
+    deaths=numeric(),
+    recovered=numeric(),
+    stringsAsFactors = FALSE
+  )
+  for (date in unique(df$date)) {
+    sd <- df[(df$date==date),]
+    for (province in datum$province){
+      pstat <- sd[(sd$province_state==province),]
+      if (dim(pstat)[1] > 0) {
+        dc[nrow(dc)+1,] = list(as.character.Date(date),province,pstat$confirmed,pstat$deaths,pstat$recovered)
+      } else {
+        dc[nrow(dc)+1,] <- list(as.character.Date(date),province,NA,NA,NA)
+      }
     }
   }
-}
-dc['recovery'] <- dc$recovered*100.0/dc$confirmed
-dc <- dc[(dc$date > "03-12-2020"),]
-first <- TRUE
-for (province in datum$province) {
-  if (first) {
-    plot(
-      dc[(dc$province==province),]$confirmed,
-      xaxs='i',
-      ylim=c(min(dc$confirmed,na.rm=TRUE),max(dc$confirmed,na.rm=TRUE)),
-      xlab=paste("Days Since",dc$date[1]),
-      ylab='Confirmed (Log Scale)',
-      main=paste('Canada K19 Stats from John Hopkins as of',max(dc$date)),
-      type='b',
-      cex=.7,
-      pch=20,
-      col=datum[(datum$province==province),]$color,
-      panel.first=grid(),
-      log='y'
-    )
-    first <- FALSE
-  } else {
-    points(dc[(dc$province==province),]$confirmed,type='b',cex=.7,pch=20,col=datum[(datum$province==province),]$color)
+  dc['recovery'] <- dc$recovered*100.0/dc$confirmed
+  dc <- dc[(dc$date > "03-12-2020"),]
+  first <- TRUE
+  for (province in datum$province) {
+    if (first) {
+      plot(
+        as.Date(dc[(dc$province==province),]$date,"%m-%d-%Y"),dc[(dc$province==province),]$confirmed,
+        xaxs='i',
+        ylim=c(min(dc$confirmed,na.rm=TRUE),max(dc$confirmed,na.rm=TRUE)),
+        xlab="Days",
+        ylab='Confirmed (Log Scale)',
+        main=paste('Canada K19 Stats from John Hopkins as of',max(dc$date)),
+        type='b',
+        cex=.7,
+        pch=20,
+        col=datum[(datum$province==province),]$color,
+        panel.first=grid(),
+        log='y'
+      )
+      first <- FALSE
+    } else {
+      points(as.Date(dc[(dc$province==province),]$date,"%m-%d-%Y"),dc[(dc$province==province),]$confirmed,type='b',cex=.7,pch=20,col=datum[(datum$province==province),]$color)
+    }
   }
+  legend("topleft",
+         legend=datum$province,
+         cex=.7,
+         pch=20,
+         col=datum$color,
+         lty=1
+  )
 }
-legend("topleft",
-       legend=datum$province,
-       cex=.7,
-       pch=20,
-       col=datum$color,
-       lty=1
-)
 
 
 plt_canada_stats <- function(df) {
@@ -178,15 +181,18 @@ plt_canada_stats <- function(df) {
   canada <- df[(df$country_region=='Canada'),]
   # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
   ac <- aggregate(canada$confirmed,by=list(date=canada$date),FUN=sum)
-  plot(ac$x,type='b',xaxs='i',panel.first=grid(),
-       xlab="Days since 01-26-2020",
+  plot(as.Date(ac$date,"%m-%d-%Y"),ac$x,type='b',xaxs='i',panel.first=grid(),cex=.7,pch=20,col="blue",
+       xlab="Days",
        ylab="Confirmed (Log Scale)",
        main=paste("Canada K19 Stats as of",time_stamp),log="y")
+  ad <- aggregate(canada$deaths,by=list(date=canada$date),FUN=sum)
+  points(as.Date(ad$date,"%m-%d-%Y"),ad$x,type='b',cex=.7,pch=20,col="red")
+  legend("topleft",legend=c('Confirmed','Deaths'),cex=.7,pch=20,col=c('blue','red'),lty=1)
 }
 
 plt_province_stats(df)
 plt_canada_stats(df)
-
+plt_prov_stats(df)
 
 
 dw <- data.frame(
@@ -234,27 +240,31 @@ get_recovery_rates <- function() {
   rr[order(rr$global_recovery_rate,decreasing=TRUE),]
 }
 recovery_rates <- get_recovery_rates()
+
+
 rr_str <- c()
-reduced_recovery_rates <- recovery_rates[(recovery_rates$global_recovery_rate>0.3),]
+chop <- 0.3
+reduced_recovery_rates <- recovery_rates[(recovery_rates$global_recovery_rate>chop),]
 for (idx in 1:nrow(reduced_recovery_rates)) {
   rr_str <- c(rr_str,sprintf("%s: %.1f%%",reduced_recovery_rates$country[idx],reduced_recovery_rates$global_recovery_rate[idx]))
 }
 rr_str <- c(rr_str,sprintf("[Global: %.1f%%]",sum(dw$recovery_rate[nrow(dw)])))
+
 rrr_str <- c()
 rrr <- recovery_rates[(order(recovery_rates$local_recovery_rate,decreasing = TRUE)),]
 rrr <- rrr[(rrr$local_recovery_rate>5),]
 for (idx in 1:nrow(rrr)) {
   rrr_str <- c(rrr_str,sprintf("%s: %.1f%%",rrr$country[idx],rrr$local_recovery_rate[idx]))
 }
-#rrr_str <- c(rrr_str,sprintf("[Global: %.1f%%]",sum(dw$recovery_rate[nrow(dw)])))
-for (output in rrr_str) {cat(output,"\n")}
+rrr_str <- c(rrr_str,sprintf("[Global: %.1f%%]",sum(dw$recovery_rate[nrow(dw)])))
+#for (output in rrr_str) {cat(output,"\n")}
 
 x <- seq(length(dw$recovery_rate))
 y <- dw$recovery_rate
 model <- lm(y ~ poly(x,12))
 plot(
-     dw$death_rate,
-     xlab = 'Days Since 01-22-2020',
+     as.Date(dw$date,"%m-%d-%Y"),dw$death_rate,
+     xlab = 'Days',
      ylab='% Outcome',
      ylim=c(0,100),
      main=paste('Global K19 Case Outcome Rates as of',df$date[[length(df$date)]]),
@@ -265,24 +275,24 @@ plot(
      col='red',
      panel.first=grid()
 )
-points(dw$death_rate,cex=.7,pch=20,col='red')
-points(fitted(model),type='l',col='blue')
-points(dw$recovery_rate,cex=.7,pch=20,col='blue')
-#points(dw$spain,cex=.7,pch=20,col='black')
+points(as.Date(dw$date,"%m-%d-%Y"),dw$death_rate,cex=.7,pch=20,col='red')
+points(as.Date(dw$date,"%m-%d-%Y"),fitted(model),type='l',col='blue')
+points(as.Date(dw$date,"%m-%d-%Y"),dw$recovery_rate,cex=.7,pch=20,col='blue')
 x <- seq(length(dw$total_rate))
 y <- dw$total_rate
 model <- lm(y ~ poly(x,12))
-points(fitted(model),type='l',col="darkgrey")
+points(as.Date(dw$date,"%m-%d-%Y"),fitted(model),type='l',col="darkgrey")
+minor.tick(nx=0,ny=2,tick.ratio=0.5)
 legend("topleft",
-       title="Case Outcome Rates",
+       title="Global Case Outcome Rates",
        legend=c("Recovered / Confirmed","Deaths / Confirmed","(Recovered + Deaths) / Confirmed"),
        cex=.7,
        pch=c(20,20,NA),
        col=c("blue","red","darkgrey"),
        lty=1
 )
-legend("topright",bty='n',title="Recovery Rates (>0.3)",cex=.7,legend=rr_str,text.col="blue")
-text(0.5,58.5,
+legend("topright",bty='n',title=sprintf("Recovery Rates (>%s%%)",chop),cex=.7,legend=rr_str,text.col="blue")
+text(as.Date(dw$date,"%m-%d-%Y")[1],58.5,
      paste("Notes: As the world recovers, Total / Confirmed",
            "will approach 100%, where Total = Recovered",
            "+ Deaths.  These curves should remain fairly",
@@ -293,5 +303,4 @@ text(0.5,58.5,
      cex=0.6,pos=4)
 remove(x)
 remove(y)
-
 ```
