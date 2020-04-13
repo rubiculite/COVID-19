@@ -105,6 +105,7 @@ plt_province_stats <- function(df) {
   provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
   for (province in provinces) {
     pstats <- df[(df$province_state==province),]
+    pstats <- pstats[(pstats$date > "03-12-2020"),]
     plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
          xlab="Days",
          ylab=paste("Confirmed"),
