@@ -117,8 +117,8 @@ plt_province_stats <- function(df) {
 plt_prov_stats <- function(df) {
   #provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
   datum <- data.frame(
-    province=c('Quebec','Ontario','Manitoba','Saskatchewan','British Columbia'),
-    color=c("red","blue","black","orange","brown"),
+    province=c('Quebec','Ontario','Manitoba','Saskatchewan','British Columbia','Alberta'),
+    color=c("red","blue","black","orange","brown","purple"),
     stringsAsFactors = FALSE
   )
   dates <- unique(df$date)
@@ -266,7 +266,7 @@ model <- lm(y ~ poly(x,12))
 plot(
      as.Date(dw$date,"%m-%d-%Y"),dw$death_rate,
      xlab = 'Days',
-     ylab='% Outcome',
+     ylab='% Outcome Rates',
      ylim=c(0,100),
      main=paste('Global K19 Case Outcome Rates as of',df$date[[length(df$date)]]),
      #type='b',
@@ -285,23 +285,25 @@ model <- lm(y ~ poly(x,12))
 points(as.Date(dw$date,"%m-%d-%Y"),fitted(model),type='l',col="darkgrey")
 minor.tick(nx=0,ny=2,tick.ratio=0.5)
 legend("topleft",
-       title="Global Case Outcome Rates",
-       legend=c("Recovered / Confirmed","Deaths / Confirmed","(Recovered + Deaths) / Confirmed"),
+       #title="Global Case Outcome Rates",
+       legend=c("Recovery_Rate = World_Recovered / World_Confirmed",
+                "Death_Rate      = World_Deaths / World_Confirmed",
+                "Total_Rate*      = Recovery_Rate + Death_Rate",
+                "*As the world recovers, the Total_Rate will approach 100%."),
        cex=.7,
-       pch=c(20,20,NA),
-       col=c("blue","red","darkgrey"),
+       pch=c(20,20,NA,NA),
+       col=c("blue","red","darkgrey",NA),
        lty=1
 )
-legend("topright",bty='n',title=sprintf("Recovery Rates (>%s%%)",chop),cex=.7,legend=rr_str,text.col="blue")
-text(as.Date(dw$date,"%m-%d-%Y")[1],58.5,
-     paste("Notes: As the world recovers, Total / Confirmed",
-           "will approach 100%, where Total = Recovered",
-           "+ Deaths.  These curves should remain fairly",
-           "unchanged when adjusted for True Cases, due",
-           "to the ratios. They should also remain",
-           "relatively unchanged due to inaccuracies",
-           "in reporting, due to source variation.",sep="\n"),
-     cex=0.6,pos=4)
+#legend("topright",bty='n',title=sprintf("Recovery_Rate Breakdown (>%s%%)",chop),cex=.7,legend=rr_str,text.col="blue")
+#text(as.Date(dw$date,"%m-%d-%Y")[1],69.5,
+#     paste("Notes: The Total_Rate should approach 100%, as the world recovers.",
+#           "These curves should remain fairly unchanged when adjusted for True",
+#           "Cases, due to the ratios. They should also remain relatively unchanged",
+#           "due to inaccuracies in reporting, due to source variation.",sep="\n"),
+#     cex=0.6,pos=4)
 remove(x)
 remove(y)
+
+#TO-DO: https://plotly.com/r/filled-area-plots/
 ```
