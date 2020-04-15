@@ -104,7 +104,7 @@ plt_province_stats <- function(df) {
   time_stamp <- df$date[[length(df$date)]]
   provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
   for (province in provinces) {
-    png(sprintf("plts/K19_%s_Confirmed.png",province), width=700, height=432)
+    png(gsub(" ","_",sprintf("plts/K19_%s_Confirmed.png",province)), width=700, height=432)
     print(sprintf("plts/K19_%s_Confirmed.png",province))
     pstats <- df[(df$province_state==province),]
     pstats <- pstats[(pstats$date > "03-12-2020"),]
@@ -186,6 +186,7 @@ plt_canada_stats <- function(df) {
   time_stamp <- df$date[[length(df$date)]]
   canada <- df[(df$country_region=='Canada'),]
   # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
+  png("plts/K19_Canada_Stats.png", width=700, height=432)
   ac <- aggregate(canada$confirmed,by=list(date=canada$date),FUN=sum)
   plot(as.Date(ac$date,"%m-%d-%Y"),ac$x,type='b',xaxs='i',panel.first=grid(),cex=.7,pch=20,col="blue",
        xlab="Days",
@@ -194,6 +195,7 @@ plt_canada_stats <- function(df) {
   ad <- aggregate(canada$deaths,by=list(date=canada$date),FUN=sum)
   points(as.Date(ad$date,"%m-%d-%Y"),ad$x,type='b',cex=.7,pch=20,col="red")
   legend("topleft",legend=c('Confirmed','Deaths'),cex=.7,pch=20,col=c('blue','red'),lty=1)
+  dev.off()
 }
 
 plt_province_stats(df)
