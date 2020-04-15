@@ -10,6 +10,14 @@ As I'm a Winnipeger, I'm interested in Canadian Stats. Here's are the <a href="h
 
 <img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Manitoba_Confirmed.png">
 
+I've also been looking at some of the major provinces, as a Canadian.
+
+<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Major_Canada_Province_Stats.png">
+
+And how Canada is doing as a whole.
+
+<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Canada_Stats.png">
+
 ---
 
 *The data is obtained from the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) <a href="https://github.com/CSSEGISandData/COVID-19">COVID-19 repo</a>, which is included here as a submodule.
