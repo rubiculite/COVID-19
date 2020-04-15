@@ -264,18 +264,20 @@ x <- seq(length(dw$recovery_rate))
 y <- dw$recovery_rate
 model <- lm(y ~ poly(x,12))
 plot(
-     as.Date(dw$date,"%m-%d-%Y"),dw$death_rate,
+     as.Date(dw$date,"%m-%d-%Y"),
+     dw$death_rate,
      xlab = 'Days',
      ylab='% Outcome Rates',
      ylim=c(0,100),
      main=paste('Global K19 Case Outcome Rates as of',df$date[[length(df$date)]]),
-     #type='b',
+     # https://stackoverflow.com/questions/38594177/changing-date-time-format-in-r
+     #main=paste('Global K19 Case Outcome Rates as of',as.POSIXct(as.Date(df$date[[length(df$date)]],"%m-%d-%Y"), format="%m-%d-%Y")),
      type='l',
      xaxs='i',
      yaxs='i',
      col='red',
      panel.first=grid()
-)
+)#strptime(as.Date(dw$date,"%m-%d-%Y"), format="%mon %d, %y")
 points(as.Date(dw$date,"%m-%d-%Y"),dw$death_rate,cex=.7,pch=20,col='red')
 points(as.Date(dw$date,"%m-%d-%Y"),fitted(model),type='l',col='blue')
 points(as.Date(dw$date,"%m-%d-%Y"),dw$recovery_rate,cex=.7,pch=20,col='blue')
@@ -289,12 +291,28 @@ legend("topleft",
        legend=c("Recovery_Rate = World_Recovered / World_Confirmed",
                 "Death_Rate      = World_Deaths / World_Confirmed",
                 "Total_Rate*      = Recovery_Rate + Death_Rate",
-                "*As the world recovers, the Total_Rate will approach 100%."),
+                "*As the world recovers, the Total_Rate approaches 100%."),
        cex=.7,
        pch=c(20,20,NA,NA),
        col=c("blue","red","darkgrey",NA),
        lty=1
 )
+dr <- sum(dw$recovery_rate[nrow(dw)])-sum(dw$recovery_rate[nrow(dw)-1])
+dra <- if(dr>0) {"\u2191"} else if (dr==0) {"\u2195"} else {"\u2193"}
+dd <- sum(dw$death_rate[nrow(dw)])-sum(dw$death_rate[nrow(dw)-1])
+dda <- if(dd>0) {"\u2191"} else if (dd==0) {"\u2195"} else {"\u2193"}
+dt <- sum(dw$total_rate[nrow(dw)])-sum(dw$total_rate[nrow(dw)-1])
+dta <- if(dt>0) {"\u2191"} else if (dt==0) {"\u2195"} else {"\u2193"}
+#op <- par(famliy="Courier")
+legend("topright",bty='n',
+    legend=c(
+      sprintf("Recovered: %.2f%% %s %.2f%%",sum(dw$recovery_rate[nrow(dw)]),dra,dr),
+      sprintf("Deaths: %.2f%% %s %.2f%%",sum(dw$death_rate[nrow(dw)]),dda,dd),
+      sprintf("Total: %.2f%% %s %.2f%%",sum(dw$total_rate[nrow(dw)]),dta,dt)
+    ),
+    text.col=c("blue","red","darkgrey")
+)
+#par(op)
 #legend("topright",bty='n',title=sprintf("Recovery_Rate Breakdown (>%s%%)",chop),cex=.7,legend=rr_str,text.col="blue")
 #text(as.Date(dw$date,"%m-%d-%Y")[1],69.5,
 #     paste("Notes: The Total_Rate should approach 100%, as the world recovers.",
