@@ -104,6 +104,8 @@ plt_province_stats <- function(df) {
   time_stamp <- df$date[[length(df$date)]]
   provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
   for (province in provinces) {
+    png(sprintf("plts/K19_%s_Confirmed.png",province), width=700, height=432)
+    print(sprintf("plts/K19_%s_Confirmed.png",province))
     pstats <- df[(df$province_state==province),]
     pstats <- pstats[(pstats$date > "03-12-2020"),]
     plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
@@ -111,6 +113,7 @@ plt_province_stats <- function(df) {
          ylab=paste("Confirmed"),
          main=paste(province,"K19 Stats as of",time_stamp)
     )
+    dev.off()
   }
 }
 
@@ -146,6 +149,7 @@ plt_prov_stats <- function(df) {
   dc['recovery'] <- dc$recovered*100.0/dc$confirmed
   dc <- dc[(dc$date > "03-12-2020"),]
   first <- TRUE
+  png("plts/K19_Major_Canada_Province_Stats.png", width=700, height=432)
   for (province in datum$province) {
     if (first) {
       plot(
@@ -174,6 +178,7 @@ plt_prov_stats <- function(df) {
          col=datum$color,
          lty=1
   )
+  dev.off()
 }
 
 
@@ -263,6 +268,7 @@ rrr_str <- c(rrr_str,sprintf("[Global: %.1f%%]",sum(dw$recovery_rate[nrow(dw)]))
 x <- seq(length(dw$recovery_rate))
 y <- dw$recovery_rate
 model <- lm(y ~ poly(x,12))
+png("plts/K19_World_Outcome_Rates.png", width=700, height=432)
 plot(
      as.Date(dw$date,"%m-%d-%Y"),
      dw$death_rate,
@@ -322,6 +328,7 @@ legend("topright",bty='n',
 #     cex=0.6,pos=4)
 remove(x)
 remove(y)
+dev.off()
 
 #TO-DO: https://plotly.com/r/filled-area-plots/
 ```
