@@ -18,6 +18,18 @@ And how Canada is doing as a whole.
 
 <img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Canada_Stats.png">
 
+
+---
+
+So other Canada stats.
+
+<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Quebec_Confirmed.png">
+
+<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Ontario_Confirmed.png">
+
+<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_British_Columbia_Confirmed.png">
+
+
 ---
 
 *The data is obtained from the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) <a href="https://github.com/CSSEGISandData/COVID-19">COVID-19 repo</a>, which is included here as a submodule.
