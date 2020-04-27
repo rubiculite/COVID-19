@@ -267,9 +267,10 @@ for (idx in 1:nrow(rrr)) {
 rrr_str <- c(rrr_str,sprintf("[Global: %.1f%%]",sum(dw$recovery_rate[nrow(dw)])))
 #for (output in rrr_str) {cat(output,"\n")}
 
+p_order <- 14
 x <- seq(length(dw$recovery_rate))
 y <- dw$recovery_rate
-model <- lm(y ~ poly(x,12))
+model <- lm(y ~ poly(x,p_order))
 png("plts/K19_World_Outcome_Rates.png", width=700, height=432)
 plot(
      as.Date(dw$date,"%m-%d-%Y"),
@@ -291,7 +292,7 @@ points(as.Date(dw$date,"%m-%d-%Y"),fitted(model),type='l',col='blue')
 points(as.Date(dw$date,"%m-%d-%Y"),dw$recovery_rate,cex=.7,pch=20,col='blue')
 x <- seq(length(dw$total_rate))
 y <- dw$total_rate
-model <- lm(y ~ poly(x,12))
+model <- lm(y ~ poly(x,p_order))
 points(as.Date(dw$date,"%m-%d-%Y"),fitted(model),type='l',col="darkgrey")
 minor.tick(nx=0,ny=2,tick.ratio=0.5)
 legend("topleft",
