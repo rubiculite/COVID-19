@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(splines)
 library(Hmisc)
+library(formattable)
 ```
 
 ```{r}
@@ -297,10 +298,13 @@ points(as.Date(dw$date,"%m-%d-%Y"),fitted(model),type='l',col="darkgrey")
 minor.tick(nx=0,ny=2,tick.ratio=0.5)
 legend("topleft",
        #title="Global Case Outcome Rates",
-       legend=c("Recovery_Rate = World_Recovered / World_Confirmed",
-                "Death_Rate      = World_Deaths / World_Confirmed",
-                "Total_Rate*      = Recovery_Rate + Death_Rate",
-                "*As the world recovers, the Total_Rate approaches 100%."),
+       legend=c(
+           "Recovery_Rate = World_Recovered / World_Confirmed",
+           "Death_Rate      = World_Deaths / World_Confirmed",
+           "Total_Rate*      = Recovery_Rate + Death_Rate",
+           sprintf("World_Confirmed: %s",as.character(comma(dw$confirmed[nrow(dw)],format="d")))
+           #"*As the world recovers, the Total_Rate approaches 100%."
+       ),
        cex=.7,
        pch=c(20,20,NA,NA),
        col=c("blue","red","darkgrey",NA),
