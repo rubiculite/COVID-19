@@ -268,7 +268,7 @@ for (idx in 1:nrow(rrr)) {
 rrr_str <- c(rrr_str,sprintf("[Global: %.1f%%]",sum(dw$recovery_rate[nrow(dw)])))
 #for (output in rrr_str) {cat(output,"\n")}
 
-p_order <- 14
+p_order <- 16
 x <- seq(length(dw$recovery_rate))
 y <- dw$recovery_rate
 model <- lm(y ~ poly(x,p_order))
