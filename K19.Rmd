@@ -112,8 +112,21 @@ plt_province_stats <- function(df) {
     plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
          xlab="Days",
          ylab=paste("Confirmed"),
-         main=paste(province,"K19 Stats as of",time_stamp)
+         main=paste(province,"K19 Stats as of",time_stamp),
+         log='y',
+         cex=.7,
+         pch=20
     )
+    lines(as.Date(pstats$date,"%m-%d-%Y"),pstats$recovered,col='blue',type='b',cex=.7,pch=20)
+    lines(as.Date(pstats$date,"%m-%d-%Y"),pstats$deaths,col='red',type='b',cex=.7,pch=20)
+    legend("topleft",
+         legend=c('Cases','Recovered','Deaths'),
+         cex=.7,
+         pch=20,
+         col=c('black','blue','red'),
+         lty=1
+    )
+
     dev.off()
   }
 }
