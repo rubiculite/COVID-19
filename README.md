@@ -21,13 +21,13 @@ And how Canada is doing as a whole.
 
 ---
 
-So other Canada stats.
+Some other Canada stats.
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Quebec_Confirmed.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Quebec_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Ontario_Confirmed.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Ontario_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_British_Columbia_Confirmed.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_British_Columbia_Outcomes.png">
 
 
 ---
