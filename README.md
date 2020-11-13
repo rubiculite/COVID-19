@@ -8,26 +8,26 @@ The following is an indicator of the world's recovery rates. The Recovery and De
 
 As I'm a Winnipeger, I'm interested in Canadian Stats. Here's are the <a href="https://www.gov.mb.ca/covid19/index.html">Confirmend Cases for Manitoba</a>.
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Manitoba_Confirmed.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Manitoba_Outcomes.png">
 
 I've also been looking at some of the major provinces, as a Canadian.
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Major_Canada_Province_Stats.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Major_Canada_Province_Stats.png">
 
 And how Canada is doing as a whole.
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Canada_Stats.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Canada_Stats.png">
 
 
 ---
 
 Some other Canada stats.
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Quebec_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Quebec_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_Ontario_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Ontario_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/K19_British_Columbia_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_British_Columbia_Outcomes.png">
 
 
 ---
