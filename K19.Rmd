@@ -103,15 +103,15 @@ df <- get_dataset()
 
 plt_province_stats <- function(df) {
   time_stamp <- df$date[[length(df$date)]]
-  provinces <- c('Newfoundland','Nova Scotia','Prince Edward Island','New Brunswick','Quebec','Ontario','Manitoba','British Columbia')
+  provinces <- c('Nova Scotia','Prince Edward Island','New Brunswick','Quebec','Ontario','Manitoba','British Columbia')
   for (province in provinces) {
-    png(gsub(" ","_",sprintf("plts/K19_%s_Confirmed.png",province)), width=700, height=432)
-    print(sprintf("plts/K19_%s_Confirmed.png",province))
+    png(gsub(" ","_",sprintf("plts/canada/K19_%s_Confirmed.png",province)), width=700, height=432)
+    print(sprintf("plts/canada/K19_%s_Outcomes.png",province))
     pstats <- df[(df$province_state==province),]
     pstats <- pstats[(pstats$date > "03-12-2020"),]
     plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
          xlab="Days",
-         ylab=paste("Confirmed"),
+         ylab=paste("Outcomes"),
          main=paste(province,"K19 Stats as of",time_stamp),
          log='y',
          cex=.7,
@@ -162,7 +162,7 @@ plt_prov_stats <- function(df) {
   dc['recovery'] <- dc$recovered*100.0/dc$confirmed
   dc <- dc[(dc$date > "03-12-2020"),]
   first <- TRUE
-  png("plts/K19_Major_Canada_Province_Stats.png", width=700, height=432)
+  png("plts/canada/K19_Major_Canada_Province_Stats.png", width=700, height=432)
   for (province in datum$province) {
     if (first) {
       plot(
@@ -199,7 +199,7 @@ plt_canada_stats <- function(df) {
   time_stamp <- df$date[[length(df$date)]]
   canada <- df[(df$country_region=='Canada'),]
   # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
-  png("plts/K19_Canada_Stats.png", width=700, height=432)
+  png("plts/canada/K19_Canada_Stats.png", width=700, height=432)
   ac <- aggregate(canada$confirmed,by=list(date=canada$date),FUN=sum)
   plot(as.Date(ac$date,"%m-%d-%Y"),ac$x,type='b',xaxs='i',panel.first=grid(),cex=.7,pch=20,col="blue",
        xlab="Days",
