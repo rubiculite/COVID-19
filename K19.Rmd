@@ -110,7 +110,8 @@ plt_province_stats <- function(df,is_confirmed=FALSE) {
         'Nova Scotia',
         'Ontario',
         'Prince Edward Island',
-        'Quebec'
+        'Quebec',
+        'Saskatchewan'
     )
     if (!is_confirmed) {
         for (province in provinces) {
