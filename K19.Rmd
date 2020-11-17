@@ -159,8 +159,8 @@ plt_province_stats <- function(df,is_confirmed=FALSE) {
 plt_prov_stats <- function(df) {
   #provinces <- list('Quebec','Ontario','Manitoba','British Columbia')
   datum <- data.frame(
-    province=c('Quebec','Ontario','Manitoba','Saskatchewan','British Columbia','Alberta'),
-    color=c("red","blue","black","orange","brown","purple"),
+    province=c('Quebec','Ontario','Nova Scotia','New Brunswick','Saskatchewan','Manitoba','British Columbia','Alberta','Prince Edward Island'),
+    color=c("red","blue","pink","gold","orange","black","brown","purple","grey"),
     stringsAsFactors = FALSE
   )
   dates <- unique(df$date)
@@ -210,7 +210,7 @@ plt_prov_stats <- function(df) {
       points(as.Date(dc[(dc$province==province),]$date,"%m-%d-%Y"),dc[(dc$province==province),]$confirmed,type='b',cex=.7,pch=20,col=datum[(datum$province==province),]$color)
     }
   }
-  legend("topleft",
+  legend("bottomright",
          legend=datum$province,
          cex=.7,
          pch=20,
