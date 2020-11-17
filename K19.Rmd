@@ -121,7 +121,7 @@ plt_province_stats <- function(df,is_confirmed=FALSE) {
             pstats <- pstats[(pstats$date > "03-12-2020"),]
             plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
                  xlab="Days",
-                 ylab=paste("Outcomes"),
+                 ylab=paste("Outcomes (Log Scale)"),
                  main=paste(province,"K19 Stats as of",time_stamp),
                  log='y',
                  cex=.7,
