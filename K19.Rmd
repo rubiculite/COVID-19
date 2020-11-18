@@ -481,7 +481,7 @@ plt_state_stats <- function(df,is_confirmed=FALSE) {
             )
             lines(as.Date(ad$date,"%m-%d-%Y"),ad$x,col='red',type='b',cex=.7,pch=20)
             # TO-DO: Fix recoved problem...
-            if (length(ar$x)>0) {
+            if (max(ar$x)>0) {
                 lines(as.Date(ar$date,"%m-%d-%Y"),ar$x,col='blue',type='b',cex=.7,pch=20)
                  legend("bottomright",
                      legend=c(
@@ -543,8 +543,35 @@ plt_state_stats <- function(df,is_confirmed=FALSE) {
     }
 }
 
-plt_state_stats(df,is_confirmed=TRUE)
-plt_state_stats(df,is_confirmed=FALSE)
+plt_us_stats <- function(df) {
+  time_stamp <- df$date[[length(df$date)]]
+  us <- df[(df$province_state %in% states),]
+  png("plts/us/K19_US_Stats.png", width=700, height=432)
+  ac <- aggregate(us$confirmed,by=list(date=us$date),FUN=sum)
+  plot(as.Date(ac$date,"%m-%d-%Y"),ac$x,type='b',xaxs='i',panel.first=grid(),cex=.7,pch=20,col="blue",
+       xlab="Days",
+       ylab="Confirmed (Log Scale)",
+       main=paste("US K19 Stats as of",time_stamp),log="y")
+  ad <- aggregate(us$deaths,by=list(date=us$date),FUN=sum)
+  points(as.Date(ad$date,"%m-%d-%Y"),ad$x,type='b',cex=.7,pch=20,col="red")
+  legend(
+      "topleft",
+      legend=c(
+          sprintf('Confirmed (%s)',formatC(max(ac$x),format="d",big.mark=",")),
+          sprintf('Deaths (%s)',formatC(max(ad$x),format="d",big.mark=","))
+      ),
+      cex=.7,
+      pch=20,
+      col=c('blue','red'),
+      lty=1
+  )
+  dev.off()
+}
+
+plt_us_stats(df)
+
+#plt_state_stats(df,is_confirmed=TRUE)
+#plt_state_stats(df,is_confirmed=FALSE)
 ```
 
 
