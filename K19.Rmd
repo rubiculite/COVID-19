@@ -100,7 +100,6 @@ get_dataset <- function() {
 }
 df <- get_dataset()
 
-
 plt_province_stats <- function(df,is_confirmed=FALSE) {
     time_stamp <- df$date[[length(df$date)]]
     provinces <- c(
@@ -115,8 +114,9 @@ plt_province_stats <- function(df,is_confirmed=FALSE) {
     )
     if (!is_confirmed) {
         for (province in provinces) {
-            png(gsub(" ","_",sprintf("plts/canada/K19_%s_Outcomes.png",province)), width=700, height=432)
-            print(sprintf("plts/canada/K19_%s_Outcomes.png",province))
+            fname <- gsub(" ","_",sprintf("plts/canada/K19_%s_Outcomes.png",province))
+            png(fname, width=700, height=432)
+            print(fname)
             pstats <- df[(df$province_state==province),]
             pstats <- pstats[(pstats$date > "03-12-2020"),]
             plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
@@ -140,8 +140,9 @@ plt_province_stats <- function(df,is_confirmed=FALSE) {
         }
     } else {
         for (province in provinces) {
-            png(gsub(" ","_",sprintf("plts/canada/K19_%s_Confirmed.png",province)), width=700, height=432)
-            print(sprintf("plts/canada/K19_%s_Confirmed.png",province))
+            fname <- gsub(" ","_",sprintf("plts/canada/K19_%s_Confirmed.png",province))
+            png(fname, width=700, height=432)
+            print(fname)
             pstats <- df[(df$province_state==province),]
             pstats <- pstats[(pstats$date > "03-12-2020"),]
             plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
@@ -378,3 +379,130 @@ dev.off()
 
 #TO-DO: https://plotly.com/r/filled-area-plots/
 ```
+
+
+```{r}
+
+states <- c(
+    'Alabama',
+    'Alaska',
+    'Arizona',
+    'Arkansas',
+    'California',
+    'Colorado',
+    'Connecticut',
+    'Delaware',
+    'Florida',
+    'Georgia',
+    'Hawaii',
+    'Idaho',
+    'Illinois',
+    'Indiana',
+    'Iowa',
+    'Kansas',
+    'Kentucky',
+    'Louisiana',
+    'Maine',
+    'Maryland',
+    'Massachusetts',
+    'Michigan',
+    'Minnesota',
+    'Mississippi',
+    'Missouri',
+    'Montana',
+    'Nebraska',
+    'Nevada',
+    'New Hampshire',
+    'New Jersey',
+    'New Mexico',
+    'New York',
+    'North Carolina',
+    'North Dakota',
+    'Ohio',
+    'Oklahoma',
+    'Oregon',
+    'Pennsylvania',
+    'Rhode Island',
+    'South Carolina',
+    'South Dakota',
+    'Tennessee',
+    'Texas',
+    'Utah',
+    'Vermont',
+    'Virginia',
+    'Washington',
+    'West Virginia',
+    'Wisconsin',
+    'Wyoming'
+)
+
+states <- c('New York')
+#states <- c('New York City, NY')
+
+accumulate <- function(d,column) {
+  cols <- c(d[[column]])
+  col <- c(cols[1])
+  for (i in 2:length(cols)) {
+    col <- c(col,cols[i]+col[i-1])
+  }
+  d[[column]] <- col
+  d
+}
+
+plt_state_stats <- function(df,is_confirmed=FALSE) {
+    time_stamp <- df$date[[length(df$date)]]
+    if (!is_confirmed) {
+        for (state in states) {
+            fname <- gsub(" ","_",sprintf("plts/us/outcomes/K19_%s_Outcomes.png",state))
+            png(fname, width=700, height=432)
+            print(fname)
+            pstats <- df[(df$province_state==state),]
+            pstats <- accumulate(pstats,'confirmed')
+            pstats <- accumulate(pstats,'recovered')
+            pstats <- accumulate(pstats,'deaths')
+            #pstats <- pstats[(pstats$date > "03-12-2020"),]
+            plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
+                 xlab="Days",
+                 ylab=paste("Outcomes (Log Scale)"),
+                 main=paste(state,"K19 Stats as of",time_stamp),
+                 log='y',
+                 cex=.7,
+                 pch=20
+            )
+            lines(as.Date(pstats$date,"%m-%d-%Y"),pstats$recovered,col='blue',type='b',cex=.7,pch=20)
+            lines(as.Date(pstats$date,"%m-%d-%Y"),pstats$deaths,col='red',type='b',cex=.7,pch=20)
+            legend("topleft",
+                 legend=c('Confirmed','Recovered','Deaths'),
+                 cex=.7,
+                 pch=20,
+                 col=c('black','blue','red'),
+                 lty=1
+            )
+            dev.off()
+        }
+    } else {
+        for (state in states) {
+            fname <- gsub(" ","_",sprintf("plts/us/confirmed/K19_%s_Confirmed.png",state))
+            png(fname, width=700, height=432)
+            print(fname)
+            pstats <- df[(df$province_state==state),]
+            pstats <- accumulate(pstats,'confirmed')
+            #pstats <- pstats[(pstats$date > "03-12-2020"),]
+            plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
+                 xlab="Days",
+                 ylab=paste("Confirmed"),
+                 main=paste(state,"K19 Stats as of",time_stamp),
+                 cex=.7,
+                 #log='y',
+                 pch=20
+            )
+            dev.off()
+        }
+    }
+}
+
+plt_state_stats(df,is_confirmed=TRUE)
+plt_state_stats(df,is_confirmed=FALSE)
+```
+
+
