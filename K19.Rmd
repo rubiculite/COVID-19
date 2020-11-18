@@ -472,7 +472,11 @@ plt_state_stats <- function(df,is_confirmed=FALSE) {
             lines(as.Date(pstats$date,"%m-%d-%Y"),pstats$recovered,col='blue',type='b',cex=.7,pch=20)
             lines(as.Date(pstats$date,"%m-%d-%Y"),pstats$deaths,col='red',type='b',cex=.7,pch=20)
             legend("topleft",
-                 legend=c('Confirmed','Recovered','Deaths'),
+                 legend=c(
+                   sprintf('Confirmed (%s)',formatC(max(pstats$confirmed),format="d",big.mark=",")),
+                   sprintf('Recovered (%s)',formatC(max(pstats$recovered),format="d",big.mark=",")),
+                   sprintf('Deaths (%s)',formatC(max(pstats$deaths),format="d",big.mark=","))
+                 ),
                  cex=.7,
                  pch=20,
                  col=c('black','blue','red'),
@@ -486,6 +490,9 @@ plt_state_stats <- function(df,is_confirmed=FALSE) {
             png(fname, width=700, height=432)
             print(fname)
             pstats <- df[(df$province_state==state),]
+            #pstats <- pstats[(pstats$date >= "04-12-2020"),] # TO-DO: Not working???
+            pstats <- df[(df$province_state==state),]
+            pstats <<- pstats
             pstats <- accumulate(pstats,'confirmed')
             #pstats <- pstats[(pstats$date > "03-12-2020"),]
             plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
@@ -495,6 +502,13 @@ plt_state_stats <- function(df,is_confirmed=FALSE) {
                  cex=.7,
                  #log='y',
                  pch=20
+            )
+            legend("topleft",
+                 legend=sprintf('Confirmed (%s)',formatC(max(pstats$confirmed),format="d",big.mark=",")),
+                 cex=.7,
+                 pch=20,
+                 col='black',
+                 lty=1
             )
             dev.off()
         }
