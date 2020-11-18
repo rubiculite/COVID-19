@@ -446,6 +446,7 @@ states <- c(
     'Wyoming'
 )
 
+#states <- c('Colorado')
 #states <- c('New York')
 #states <- c('New York City, NY')
 
@@ -570,8 +571,8 @@ plt_us_stats <- function(df) {
 
 plt_us_stats(df)
 
-#plt_state_stats(df,is_confirmed=TRUE)
-#plt_state_stats(df,is_confirmed=FALSE)
+plt_state_stats(df,is_confirmed=TRUE)
+plt_state_stats(df,is_confirmed=FALSE)
 ```
 
 
