@@ -114,7 +114,7 @@ plt_province_stats <- function(df,is_confirmed=FALSE) {
     )
     if (!is_confirmed) {
         for (province in provinces) {
-            fname <- gsub(" ","_",sprintf("plts/canada/K19_%s_Outcomes.png",province))
+            fname <- gsub(" ","_",sprintf("plts/canada/outcomes/K19_%s_Outcomes.png",province))
             png(fname, width=700, height=432)
             print(fname)
             pstats <- df[(df$province_state==province),]
@@ -140,7 +140,7 @@ plt_province_stats <- function(df,is_confirmed=FALSE) {
         }
     } else {
         for (province in provinces) {
-            fname <- gsub(" ","_",sprintf("plts/canada/K19_%s_Confirmed.png",province))
+            fname <- gsub(" ","_",sprintf("plts/canada/confirmed/K19_%s_Confirmed.png",province))
             png(fname, width=700, height=432)
             print(fname)
             pstats <- df[(df$province_state==province),]
