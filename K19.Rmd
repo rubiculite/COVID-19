@@ -590,7 +590,7 @@ plt_multi_province_stats <- function(df) {
         'Saskatchewan'
     )
     mfrow.old <- par()$mfrow
-    mars.old <- btm_mars <- top_mars <- par()$mar
+    mar.old <- btm_mars <- top_mars <- par()$mar
     btm_mars[1] <- top_mars[3] <- 0.25
     btm_mars[2] <- top_mars[2] <- 7.1
     scipen <- options()$scipen
@@ -627,6 +627,7 @@ plt_multi_province_stats <- function(df) {
         axis(2,las=1)
         dev.off()
     }
+    par(mfrow=mfrow.old,mar=mar.old)
     options(scipen=scipen)
 }
 
@@ -639,32 +640,54 @@ plt_multi_province_stats(df)
 
 ```{r}
 
-plt_state_stats <- function(df) {
+plt_multi_state_stats <- function(df) {
     time_stamp <- df$date[[length(df$date)]]
-       for (state in states) {
-            fname <- gsub(" ","_",sprintf("plts/us/multi/K19_%s_Confirmed.png",state))
-            #png(fname, width=700, height=432)
-            print(fname)
-            pstats <- df[(df$province_state==state),]
-            ac <- aggregate(pstats$confirmed,by=list(date=pstats$date),FUN=sum)
-            plot(as.Date(ac$date,"%m-%d-%Y"),ac$x,type='b',xaxs='i',panel.first=grid(),
-                 xlab="Days",
-                 ylab=paste("Confirmed"),
-                 main=paste(state,"K19 Stats as of",time_stamp),
-                 cex=.7,
-                 #log='y',
-                 pch=20
-            )
-            legend("topleft",
-                 legend=sprintf('Confirmed (%s)',formatC(max(ac$x),format="d",big.mark=",")),
-                 cex=.7,
-                 pch=20,
-                 col='black',
-                 lty=1
-            )
-            #dev.off()
+    mfrow.old <- par()$mfrow
+    mar.old <- btm_mars <- top_mars <- par()$mar
+    btm_mars[1] <- top_mars[3] <- 0.25
+    btm_mars[2] <- top_mars[2] <- 7.1
+    scipen <- options()$scipen
+    options(scipen=999)
+    for (state in states) {
+        pstats <- df[(df$province_state==state),]
+        ac <- aggregate(pstats$confirmed,by=list(date=pstats$date),FUN=sum)
+        ad <- aggregate(pstats$deaths,by=list(date=pstats$date),FUN=sum)
+        fname <- gsub(" ","_",sprintf("plts/us/multi/K19_%s_Outcome_Linear_Plots.png",state))
+        png(fname, width=700, height=432)
+        print(fname)
+        par(mfrow=c(2,1))
+        par(mar=btm_mars)
+        plot(as.Date(ac$date,"%m-%d-%Y"),ac$x,type='b',xaxs='i',panel.first=grid(),
+            xlab="",
+            xaxt='n',
+            ylab="",
+            yaxt='n',
+            main=paste(state,"K19 Stats as of",time_stamp),
+            cex=.7,
+            pch=20
+        )
+        mtext(side=2,"Confirmed",line=4.)
+        axis(2,las=1)
+        par(mar=top_mars)
+        plot(as.Date(ad$date,"%m-%d-%Y"),ad$x,type='b',xaxs='i',panel.first=grid(),
+            xlab="Days",
+            ylab="",
+            yaxt='n',
+            cex=.7,
+            pch=20,
+            col='red'
+        )
+        mtext(side=2,"Deaths",line=4.)
+        axis(2,las=1)
+        dev.off()
         }
 }
 
+plt_multi_state_stats(df)
 
 ```
+
+
+
+
+
