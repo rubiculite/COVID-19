@@ -522,7 +522,7 @@ plt_state_stats <- function(df,is_confirmed=FALSE) {
             pstats <- df[(df$province_state==state),]
             #pstats <- pstats[(pstats$date >= "04-12-2020"),] # TO-DO: Not working???
             #pstats <- pstats[(pstats$date > "03-12-2020"),]
-            pstats <- df[(df$province_state==state),]
+            #pstats <- df[(df$province_state==state),] # duplicate -- remove
             ac <- aggregate(pstats$confirmed,by=list(date=pstats$date),FUN=sum)
             plot(as.Date(ac$date,"%m-%d-%Y"),ac$x,type='b',xaxs='i',panel.first=grid(),
                  xlab="Days",
@@ -589,15 +589,16 @@ plt_multi_province_stats <- function(df) {
         'Quebec',
         'Saskatchewan'
     )
-    mars <- btm_mars <- top_mars <- par()$mar
+    mfrow.old <- par()$mfrow
+    mars.old <- btm_mars <- top_mars <- par()$mar
     btm_mars[1] <- top_mars[3] <- 0.25
     btm_mars[2] <- top_mars[2] <- 7.1
-    #btm_mars[3] <- 5
-    mfrows <- par()$mfrow
+    scipen <- options()$scipen
+    options(scipen=999)
     for (province in provinces) {
         pstats <- df[(df$province_state==province),]
         pstats <- pstats[(pstats$date > "03-12-2020"),]
-        fname <- gsub(" ","_",sprintf("plts/canada/multi/K19_%s_Confirmed_Linear_Plots.png",province))
+        fname <- gsub(" ","_",sprintf("plts/canada/multi/K19_%s_Outcome_Linear_Plots.png",province))
         png(fname, width=700, height=432)
         print(fname)
         par(mfrow=c(2,1))
@@ -624,16 +625,46 @@ plt_multi_province_stats <- function(df) {
         )
         mtext(side=2,"Deaths",line=4.)
         axis(2,las=1)
-        #par(mar=mars,mfrow=mfrows)
-        #break
         dev.off()
     }
-
+    options(scipen=scipen)
 }
 
 
 plt_multi_province_stats(df)
 
+
+
+```
+
+```{r}
+
+plt_state_stats <- function(df) {
+    time_stamp <- df$date[[length(df$date)]]
+       for (state in states) {
+            fname <- gsub(" ","_",sprintf("plts/us/multi/K19_%s_Confirmed.png",state))
+            #png(fname, width=700, height=432)
+            print(fname)
+            pstats <- df[(df$province_state==state),]
+            ac <- aggregate(pstats$confirmed,by=list(date=pstats$date),FUN=sum)
+            plot(as.Date(ac$date,"%m-%d-%Y"),ac$x,type='b',xaxs='i',panel.first=grid(),
+                 xlab="Days",
+                 ylab=paste("Confirmed"),
+                 main=paste(state,"K19 Stats as of",time_stamp),
+                 cex=.7,
+                 #log='y',
+                 pch=20
+            )
+            legend("topleft",
+                 legend=sprintf('Confirmed (%s)',formatC(max(ac$x),format="d",big.mark=",")),
+                 cex=.7,
+                 pch=20,
+                 col='black',
+                 lty=1
+            )
+            #dev.off()
+        }
+}
 
 
 ```
