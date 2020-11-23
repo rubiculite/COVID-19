@@ -575,4 +575,65 @@ plt_state_stats(df,is_confirmed=TRUE)
 plt_state_stats(df,is_confirmed=FALSE)
 ```
 
+```{r}
 
+plt_multi_province_stats <- function(df) {
+    time_stamp <- df$date[[length(df$date)]]
+    provinces <- c(
+        'British Columbia',
+        'Manitoba',
+        'New Brunswick',
+        'Nova Scotia',
+        'Ontario',
+        'Prince Edward Island',
+        'Quebec',
+        'Saskatchewan'
+    )
+    mars <- btm_mars <- top_mars <- par()$mar
+    btm_mars[1] <- top_mars[3] <- 0.25
+    btm_mars[2] <- top_mars[2] <- 7.1
+    #btm_mars[3] <- 5
+    mfrows <- par()$mfrow
+    for (province in provinces) {
+        pstats <- df[(df$province_state==province),]
+        pstats <- pstats[(pstats$date > "03-12-2020"),]
+        fname <- gsub(" ","_",sprintf("plts/canada/multi/K19_%s_Confirmed_Linear_Plots.png",province))
+        png(fname, width=700, height=432)
+        print(fname)
+        par(mfrow=c(2,1))
+        par(mar=btm_mars)
+        plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$confirmed,type='b',xaxs='i',panel.first=grid(),
+            xlab="",
+            xaxt='n',
+            ylab="",
+            yaxt='n',
+            main=paste(province,"K19 Stats as of",time_stamp),
+            cex=.7,
+            pch=20
+        )
+        mtext(side=2,"Confirmed",line=4.)
+        axis(2,las=1)
+        par(mar=top_mars)
+        plot(as.Date(pstats$date,"%m-%d-%Y"),pstats$deaths,type='b',xaxs='i',panel.first=grid(),
+            xlab="Days",
+            ylab="",
+            yaxt='n',
+            cex=.7,
+            pch=20,
+            col='red'
+        )
+        mtext(side=2,"Deaths",line=4.)
+        axis(2,las=1)
+        #par(mar=mars,mfrow=mfrows)
+        #break
+        dev.off()
+    }
+
+}
+
+
+plt_multi_province_stats(df)
+
+
+
+```
