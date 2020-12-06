@@ -23,17 +23,17 @@ And how Canada is doing as a whole.
 
 Some other Canada stats.
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_British_Columbia_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/outcomes/K19_British_Columbia_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_New_Brunswick_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/outcomes/K19_New_Brunswick_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Nova_Scotia_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/outcomes/K19_Nova_Scotia_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Ontario_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/outcomes/K19_Ontario_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Prince_Edward_Island_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/outcomes/K19_Prince_Edward_Island_Outcomes.png">
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/K19_Quebec_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/outcomes/K19_Quebec_Outcomes.png">
 
 
 ---
