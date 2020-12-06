@@ -8,7 +8,7 @@ The following is an indicator of the world's recovery rates. The Recovery and De
 
 As I'm a Winnipeger, I'm interested in Canadian Stats. Here's are the <a href="https://www.gov.mb.ca/covid19/index.html">Confirmend Cases for Manitoba</a>.
 
-<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/confirmed/K19_Manitoba_Outcomes.png">
+<img src="https://github.com/rubiculite/K19/blob/master/plts/canada/confirmed/K19_Manitoba_Confirmed.png">
 
 I've also been looking at some of the major provinces, as a Canadian.
 
