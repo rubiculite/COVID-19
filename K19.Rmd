@@ -16,6 +16,17 @@ library(formattable)
 get_dataset <- function() {
   data_root <- "/Users/susy/workbench/K19/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/"
   data_files <- Sys.glob(paste(data_root,"*.csv",sep=""))
+  # gsub(".csv","",gsub("^(.*?/)+","",data_files))
+  
+  # order the date files by date
+  get_file_date_fields <- function(files) {
+    date_fields <- c()
+    for (file in files) {
+      date_fields <- c(date_fields,gsub(".csv","",gsub("^(.*?/)+","",file,perl=T)))
+    }
+    as.Date(date_fields,format="%m-%d-%Y")
+  }
+  data_files <- data_files[order(get_file_date_fields(data_files))]
   
   # reference list
   header_hist = list(
